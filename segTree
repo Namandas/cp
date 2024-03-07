@@ -1,0 +1,57 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+class segTree{
+    public : 
+    vector<int>seg;
+    segTree(int n){
+        seg.resize(4*n+1);
+    }
+    void build(int index,int low,int high,vector<int>a){
+        if(low == high){
+         seg[index] = a[low];
+         return;
+        }
+        int mid = (low+high)/2;
+        build(2*index+1,low,mid,a);
+        build(2*index+2,mid+1,high,a);
+        seg[index] = min(seg[2*index+1],seg[2*index+2]);
+    }
+ int query(int index,int low,int high,int l, int r){
+     if(high<l || r<low){
+         return INT_MAX;
+     }
+     else if(low>=l && high<=r){
+         return seg[index];
+     }
+     else{
+         int mid = (low+high)/2;
+         int left = query(2*index+1,low,mid,l,r);
+         int right = query(2*index+2,mid+1,high,l,r);
+         return min(left,right);
+     }
+ }
+ void print(){
+ for(auto i : seg){
+     cout<<i<<" ";
+ }
+ cout<<endl;
+ }
+};
+
+int main(){
+    int n,q;
+    cin>>n>>q;
+    vector<int>a(n);
+    for(int i=0;i<n;i++) cin>>a[i];
+    segTree s(n);
+    s.build(0,0,n-1,a);
+    s.print();
+    while(q){
+        int l,r;
+        cin>>l>>r;
+        cout<<s.query(0,0,n-1,l-1,r-1)<<endl;
+        q--;
+    }
+}
